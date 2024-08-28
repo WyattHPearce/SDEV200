@@ -1,5 +1,3 @@
-package M01;
-
 import javax.swing.JOptionPane;
 
 public class FirstDialog 

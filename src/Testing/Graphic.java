@@ -1,5 +1,3 @@
-package Testing;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.Graphics;

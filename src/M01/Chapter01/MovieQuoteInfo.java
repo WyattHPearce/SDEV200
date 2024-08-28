@@ -2,8 +2,6 @@
 // Written by Wyatt H. Pearce
 // Written on 8-24-2024
 
-package M01;
-
 public class MovieQuoteInfo {
     /* 
     This class demonstrates the use of the println() method 
