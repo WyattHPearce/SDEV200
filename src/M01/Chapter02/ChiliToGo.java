@@ -28,7 +28,7 @@ public class ChiliToGo
         total = numberOfAdults * ADULT_MEAL_PRICE + numberOfChildren * CHILDRENS_MEAL_PRICE;
 
         // Output
-        System.out.println("Your total is: $" + total);
+        System.out.printf("Your total is: $%.2f\n", total);
 
         input.close();
     }

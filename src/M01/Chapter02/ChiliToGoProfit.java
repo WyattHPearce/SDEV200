@@ -36,10 +36,10 @@ public class ChiliToGoProfit
         total_profit = adult_profit + childrens_profit;
 
         // Output
-        System.out.println("Total price: $" + total_price);
-        System.out.println("Total profit for adult meals: $" + adult_profit);
-        System.out.println("Total profit for childrens meals: $" + childrens_profit);
-        System.out.println("Total profit: $" + total_profit);
+        System.out.printf("Total price: $%.2f\n", total_price);
+        System.out.printf("Total profit for adult meals: $%.2f\n", adult_profit);
+        System.out.printf("Total profit for children's meals: $%.2f\n", childrens_profit);
+        System.out.printf("Total profit: $%.2f\n", total_profit);
         input.close();
     }
 }
