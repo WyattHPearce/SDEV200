@@ -1,4 +1,3 @@
-package YouDoIt;
 /* 
     Author: Wyatt H. Pearce
     Last edit: 9-30-2024
@@ -7,4 +6,11 @@ package YouDoIt;
 
 public class DinnerParty extends Party{
     private int dinnerChoice;
+
+    public int getDinnerChoice(){
+        return dinnerChoice;
+    }
+    public void setDinnerChoice(int dinnerChoice){
+        this.dinnerChoice = dinnerChoice;
+    }
 }

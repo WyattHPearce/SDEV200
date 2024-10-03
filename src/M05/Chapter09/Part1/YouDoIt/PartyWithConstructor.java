@@ -1,13 +1,17 @@
-package YouDoIt;
 /* 
     Author: Wyatt H. Pearce
     Last edit: 9-30-2024
-    Program: SDEV200 Chapter09 M05 p.333 - YouDoIt Demonstrating Inheritance
+    Program: SDEV200 Chapter09 M05 p.341
+    YouDoIt: "Understanding the Role of Constructors in Inheritance"
 */
 
-public class Party {
+public class PartyWithConstructor {
     // Fields
     private int guests;
+
+    public PartyWithConstructor(){
+        System.out.println("Creating a Party");
+    }
 
     // Getters and Setters
     public int getGuests(){
