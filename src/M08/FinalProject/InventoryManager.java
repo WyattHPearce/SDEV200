@@ -8,14 +8,21 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-// Third party imports
-// Local imports
 
 public class InventoryManager {
     // Declare global variables for the JTextFields and JTextArea
     private static JTextField itemField;
     private static JTextField locationField;
     private static JTextArea displayArea;
+
+    // Declare buttons as class-level variables so they can be accessed in the listener
+    private static JButton addButton;
+    private static JButton removeButton;
+    private static JButton editButton;
+    private static JButton generateReportButton;
+    private static JButton importButton;
+    private static JButton exportButton;
+    private static JButton searchButton;
 
     public static void main(String[] args) {
         // Creating a GUI window to add components to
@@ -26,63 +33,49 @@ public class InventoryManager {
         frame.setLayout(new FlowLayout());
 
         // Create input fields
-        itemField = new JTextField(15);     // Item name input
-        locationField = new JTextField(15); // Location input
+        itemField = new JTextField(15);      // Item name input
+        locationField = new JTextField(15);  // Location input
         displayArea = new JTextArea(10, 30); // Area to display reports
-        displayArea.setEditable(false);                // Make it non-editable
+        displayArea.setEditable(false);      // Make it non-editable
 
         // Create buttons
-        JButton addButton = new JButton("Add Item");
-        JButton removeButton = new JButton("Remove Item");
-        JButton editButton = new JButton("Edit Item");
-        JButton generateReportButton = new JButton("Generate Report");
-        JButton importButton = new JButton("Import");
-        JButton exportButton = new JButton("Export");
-        JButton searchButton = new JButton("Search"); // New search button
+        addButton = new JButton("Add Item");
+        removeButton = new JButton("Remove Item");
+        editButton = new JButton("Edit Item");
+        generateReportButton = new JButton("Generate Report");
+        importButton = new JButton("Import");
+        exportButton = new JButton("Export");
+        searchButton = new JButton("Search");
 
-        // Add action listeners for buttons
-        addButton.addActionListener(new ActionListener() {
+        // Create a single ActionListener for all buttons
+        ActionListener buttonListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                addItem();
+                if (e.getSource() == addButton) {
+                    addItem();
+                } else if (e.getSource() == removeButton) {
+                    removeItem();
+                } else if (e.getSource() == editButton) {
+                    editItem();
+                } else if (e.getSource() == generateReportButton) {
+                    generateReport();
+                } else if (e.getSource() == importButton) {
+                    importData();
+                } else if (e.getSource() == exportButton) {
+                    exportData();
+                } else if (e.getSource() == searchButton) {
+                    searchItem();
+                }
             }
-        });
+        };
 
-        removeButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                removeItem();
-            }
-        });
-
-        editButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                editItem();
-            }
-        });
-
-        generateReportButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                generateReport();
-            }
-        });
-
-        importButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                importData();
-            }
-        });
-
-        exportButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                exportData();
-            }
-        });
-        
-        // Add action listener for search button
-        searchButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                searchItem();
-            }
-        });
+        // Attach the same listener to all buttons
+        addButton.addActionListener(buttonListener);
+        removeButton.addActionListener(buttonListener);
+        editButton.addActionListener(buttonListener);
+        generateReportButton.addActionListener(buttonListener);
+        importButton.addActionListener(buttonListener);
+        exportButton.addActionListener(buttonListener);
+        searchButton.addActionListener(buttonListener);
 
         // Add components to the frame
         frame.add(new JLabel("Item:"));
@@ -105,7 +98,7 @@ public class InventoryManager {
         // Setting the icon of the JFrame
         ImageIcon iconImage = new ImageIcon("Icon.png");
         frame.setIconImage(iconImage.getImage());
-        
+
         // Initial configuration of the JFrame
         frame.setTitle(Constants.APPLICATION_TITLE);          // Frame title
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close application when click X
