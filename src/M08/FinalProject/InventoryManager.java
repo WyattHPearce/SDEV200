@@ -15,10 +15,13 @@ public class InventoryManager {
     private static JTextField locationField;
     private static JTextArea displayArea;
 
-    // Declare buttons as class-level variables so they can be accessed in the listener
-    private static JButton addButton;
-    private static JButton removeButton;
-    private static JButton editButton;
+    // Declare buttons as class-level variables
+    private static JButton addItemButton;
+    private static JButton removeItemButton;
+    private static JButton addLocationButton;
+    private static JButton removeLocationButton;
+    private static JButton editItemButton;
+    private static JButton editLocationButton;
     private static JButton generateReportButton;
     private static JButton importButton;
     private static JButton exportButton;
@@ -29,20 +32,24 @@ public class InventoryManager {
         JFrame frame = new JFrame();
         frameSetup(frame);
 
-        // Set layout for the frame
-        frame.setLayout(new FlowLayout());
+        // Use a vertical BoxLayout to stack the panel (buttons) and text area
+        frame.setLayout(new BorderLayout());
 
-        // Create input fields
+        // Create input fields and buttons
         itemField = new JTextField(15);      // Item name input
         locationField = new JTextField(15);  // Location input
-        displayArea = new JTextArea(10, 30); // Area to display reports
+        displayArea = new JTextArea(10, 40); // Area to display reports
         displayArea.setEditable(false);      // Make it non-editable
+        JScrollPane scrollPane = new JScrollPane(displayArea);
 
         // Create buttons
-        addButton = new JButton("Add Item");
-        removeButton = new JButton("Remove Item");
-        editButton = new JButton("Edit Item");
-        generateReportButton = new JButton("Generate Report");
+        addItemButton = new JButton("Add Item");
+        removeItemButton = new JButton("Remove Item");
+        addLocationButton = new JButton("Add Location");
+        removeLocationButton = new JButton("Remove Location");
+        editItemButton = new JButton("Edit Item");
+        editLocationButton = new JButton("Edit Location");
+        generateReportButton = new JButton("Get Report");
         importButton = new JButton("Import");
         exportButton = new JButton("Export");
         searchButton = new JButton("Search");
@@ -50,48 +57,76 @@ public class InventoryManager {
         // Create a single ActionListener for all buttons
         ActionListener buttonListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (e.getSource() == addButton) {
+                if (e.getSource() == addItemButton) { 
                     addItem();
-                } else if (e.getSource() == removeButton) {
+                } else if (e.getSource() == removeItemButton) { 
                     removeItem();
-                } else if (e.getSource() == editButton) {
+                } else if (e.getSource() == addLocationButton) { 
+                    addLocation();
+                } else if (e.getSource() == removeLocationButton) { 
+                    removeLocation();
+                } else if (e.getSource() == editItemButton) { 
                     editItem();
-                } else if (e.getSource() == generateReportButton) {
+                } else if (e.getSource() == editLocationButton) { 
+                    editLocation();
+                } else if (e.getSource() == generateReportButton) { 
                     generateReport();
-                } else if (e.getSource() == importButton) {
+                } else if (e.getSource() == importButton) { 
                     importData();
-                } else if (e.getSource() == exportButton) {
+                } else if (e.getSource() == exportButton) { 
                     exportData();
-                } else if (e.getSource() == searchButton) {
+                } else if (e.getSource() == searchButton) { 
                     searchItem();
                 }
             }
         };
 
-        // Attach the same listener to all buttons
-        addButton.addActionListener(buttonListener);
-        removeButton.addActionListener(buttonListener);
-        editButton.addActionListener(buttonListener);
+        // Attach listeners to buttons
+        addItemButton.addActionListener(buttonListener);
+        removeItemButton.addActionListener(buttonListener);
+        addLocationButton.addActionListener(buttonListener);
+        removeLocationButton.addActionListener(buttonListener);
+        editItemButton.addActionListener(buttonListener);
+        editLocationButton.addActionListener(buttonListener);
         generateReportButton.addActionListener(buttonListener);
         importButton.addActionListener(buttonListener);
         exportButton.addActionListener(buttonListener);
         searchButton.addActionListener(buttonListener);
 
-        // Add components to the frame
-        frame.add(new JLabel("Item:"));
-        frame.add(itemField);
-        frame.add(new JLabel("Location:"));
-        frame.add(locationField);
-        frame.add(addButton);
-        frame.add(removeButton);
-        frame.add(editButton);
-        frame.add(generateReportButton);
-        frame.add(importButton);
-        frame.add(exportButton);
-        frame.add(searchButton); // Add search button to the frame
-        frame.add(new JScrollPane(displayArea)); // Add scroll pane for the text area
+        // Create a panel to hold the input fields and buttons
+        JPanel inputPanel = new JPanel(new FlowLayout());
+        inputPanel.add(new JLabel("Item:"));
+        inputPanel.add(itemField);
+        inputPanel.add(new JLabel("Location:"));
+        inputPanel.add(locationField);
 
-        frame.setVisible(true); // Make frame visible
+        // Create another panel to hold all the buttons in a flow layout
+        JPanel buttonPanel = new JPanel(new GridLayout(0, 5, 5, 5));
+        buttonPanel.add(addItemButton);
+        buttonPanel.add(removeItemButton);
+        buttonPanel.add(addLocationButton);
+        buttonPanel.add(removeLocationButton);
+        buttonPanel.add(editItemButton);
+        buttonPanel.add(editLocationButton);
+        buttonPanel.add(generateReportButton);
+        buttonPanel.add(importButton);
+        buttonPanel.add(exportButton);
+        buttonPanel.add(searchButton);
+
+        // Add input panel and button panel to the top
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+       
+        topPanel.add(inputPanel);
+        topPanel.add(buttonPanel);
+
+        // Add everything to the main frame, buttons on top, text area below
+        frame.add(topPanel, BorderLayout.NORTH);
+        frame.add(scrollPane, BorderLayout.CENTER);
+
+        // Final setup for the frame
+        frame.setSize(Constants.WIDTH,Constants.HEIGHT);      // Set frame's width and height
+        frame.setVisible(true);
     }
 
     public static void frameSetup(JFrame frame){
@@ -102,24 +137,38 @@ public class InventoryManager {
         // Initial configuration of the JFrame
         frame.setTitle(Constants.APPLICATION_TITLE);          // Frame title
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close application when click X
-        frame.setResizable(false);                            // Prevents frame from being resized
-        frame.setSize(Constants.WIDTH,Constants.HEIGHT);      // Set frame's width and height
+        frame.setResizable(true);                            // Prevents frame from being resized
     }
 
     // Empty methods for button actions
     private static void addItem() {
-        // Logic to add item will go here
+        // Logic to add items will go here
         System.out.println("Add Item clicked");
     }
 
     private static void removeItem() {
-        // Logic to remove item will go here
+        // Logic to remove items will go here
         System.out.println("Remove Item clicked");
     }
 
+    private static void addLocation() {
+        // Logic to add locations will go here
+        System.out.println("Add Location clicked");
+    }
+
+    private static void removeLocation() {
+        // Logic to remove locations will go here
+        System.out.println("Remove Location clicked");
+    }
+
     private static void editItem() {
-        // Logic to edit item will go here
+        // Logic to edit items will go here
         System.out.println("Edit Item clicked");
+    }
+
+    private static void editLocation() {
+        // Logic to edit locations will go here
+        System.out.println("Edit Location clicked");
     }
 
     private static void generateReport() {
