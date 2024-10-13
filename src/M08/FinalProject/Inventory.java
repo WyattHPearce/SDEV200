@@ -25,21 +25,33 @@ public class Inventory {
         this.locations = new ArrayList<>();
     }
 
-    // Getters and "Setters" ("setters" are really just the "add" functions)
+    // Adds a location to array list of locations
     public void addLocation(Location location) {
         locations.add(location);
     }
-    
+
+    public void removeLocation(String locationName){
+        // Loop through all locations
+        for(int i = 0; i < getLocations().size(); i++){
+            // If the name matches, remove it
+            if(getLocations().get(i).getName().equalsIgnoreCase(locationName)){
+                getLocations().remove(i);
+                return;
+            }
+        }
+    }
+
+    // Adds item to a specific locations items
     public void addItem(Item item, String locationName) {
         // Loop through locations
         if (!locations.isEmpty()) { // Make sure it's not empty
             boolean locationFound = false; // Flag to track if location was found
     
             for (Location location : locations) {
-                if (location.getName().toLowerCase().equals(locationName.toLowerCase())) { // Use .equals() for string comparison
+                if (location.getName().equalsIgnoreCase(locationName)) {
 
                     // Add the item
-                    location.addItem(item); // Add item to the found location
+                    location.addItem(item);
 
                     // Confirm the item was added
                     JOptionPane.showMessageDialog(
@@ -65,8 +77,102 @@ public class Inventory {
         }
     }
 
+    // Removes items from a specific locations items
+    public void removeItem(String locationName, String itemName, int quantity){
+        // Flags
+        boolean foundItem = false;
+        boolean locationFound = false;
+
+        // Loop through locations
+        if (!locations.isEmpty()) { // Make sure it's not empty
+            for (Location location : locations) {
+                if (location.getName().equalsIgnoreCase(locationName)) {
+                    locationFound = true;
+
+                    // Loop through locations items
+                    if(!location.getItems().isEmpty()) { // Make sure its not empty
+                        for(Item item : location.getItems()){
+                            if(item.getName().equalsIgnoreCase(itemName)){
+
+                                // Remove the item
+                                location.removeItem(itemName, quantity); // Remove item
+
+                                // Confirm the item was removed
+                                JOptionPane.showMessageDialog(
+                                    null, 
+                                    quantity + " * '" + item.getName() + "' removed from location '" + locationName + "'.", 
+                                    "Success", 
+                                    JOptionPane.INFORMATION_MESSAGE
+                                );
+                                
+                                // We found an item, break out of loop
+                                foundItem = true;
+                                break;
+                            }
+                        }
+
+                        if(!foundItem){
+                            // Show an error message if no items are found
+                            JOptionPane.showMessageDialog(null, "Error: No items called + '" + itemName + "' found at location '" + locationName + "'", "Items Not Found", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    } else {
+                        // Show an error message if no items exist at this location
+                        JOptionPane.showMessageDialog(null, "Error: No items exist at location '" + locationName + "'", "Items Not Found", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    locationFound = true; // Set flag to true if location is found
+                    break;
+                }
+            }
+
+            if(!locationFound){
+                // Show an error message if the location name does not exist
+                JOptionPane.showMessageDialog(null, "Error: Location '" + locationName + "' does not exist.", "Location Not Found", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+    
+        } else {
+            // Show a message if there are no locations, prompting the user to add one
+            JOptionPane.showMessageDialog(null, "No locations exist. Please add a location before removing items.", "No Locations", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+    }
+
+    // Moves an item from one location to another
+    public void moveItem(String itemName, String locationName, String newLocationName){
+        // Find the location containing the item
+        Location originalLocation = getLocation(locationName);
+        if(originalLocation != null){ // Make sure it exists
+            Location newLocation = getLocation(newLocationName);
+            if(newLocationName != null){ // Make sure it exists
+                Item newItem = originalLocation.getItem(itemName); // Get the item from the original location
+                if(newItem != null){ // Make sure item exists
+                    // Add item to new location
+                    newLocation.addItem(newItem);
+
+                    // Remove item from original location
+                    originalLocation.removeItem(newItem.getName(), newItem.getQuantity());
+                }
+            }
+        }
+    }
+
+    // Returns array of locations
     public ArrayList<Location> getLocations() {
         return locations;
+    }
+
+    // Returns a specific location by name
+    public Location getLocation(String locationName){
+        for(Location location : getLocations()){
+            if(location.getName().equalsIgnoreCase(locationName)){
+                return location;
+            }
+        }
+        Utility.sendErrorMessage("Location '" + locationName + "' does not exist");
+        return null;
     }
 
     // Generates a report on this inventory object
@@ -103,6 +209,31 @@ public class Inventory {
         return report.toString();
     }
 
+    // Search for location by name and reports all items in that location
+    public String searchLocation(String locationName) {
+        StringBuilder report = new StringBuilder("Search Results for '" + locationName + "':\n");
+        boolean locationFound = false;
+
+        // Loop through all location and find a match
+        for (Location location : locations) {
+            if (location.getName().equalsIgnoreCase(locationName)) {
+                // Display that locations items
+                report
+                    .append("   ")
+                    .append(locationName + " Items:\n")
+                    .append("   NAME, QTY, LOCATION\n")
+                    .append("   " + location.toString() + "\n");
+                locationFound = true;
+            }
+        }
+
+        if (!locationFound) {
+            report.append("   No locations found with the name '" + locationName + "'.\n");
+        }
+
+        return report.toString();
+    }
+
     // Export inventory data to a text file
     public void exportData(String filename) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
@@ -121,6 +252,7 @@ public class Inventory {
 
     // Import inventory data from a text file
     public void importData(String filename) {
+        locations.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
             Location currentLocation = null;
