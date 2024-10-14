@@ -6,29 +6,20 @@
     This class describes a Location object, intended to be utilized in instances of the Inventory class
 */
 
-public class Item {
+public class Item extends Entity{
     // Fields
-    private String name;
     private int quantity;
 
     // Constructor
     public Item(String name, int quantity) {
-        this.name = name;
+        super(name);
         this.quantity = quantity;
     }
 
     // Mutator methods
-    public String getName() {
-        return name;
-    }
-
     public int getQuantity() {
         return quantity;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }  
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
@@ -37,6 +28,6 @@ public class Item {
     // Overriding the object.toString() method
     @Override
     public String toString() {
-        return "Name: " + name + ", Quantity: " + quantity;
+        return(getName() + ", " + quantity);
     }
 }
