@@ -1,0 +1,33 @@
+Location: LocationA
+   Item: apples, Quantity: 20
+
+Location: LocationB
+   Item: blueberries, Quantity: 20
+
+Location: LocationC
+   Item: cucumbers, Quantity: 443
+
+Location: LocationD
+   Item: dorito bags, Quantity: 1000
+
+Location: LocationE
+   Item: eggs, Quantity: 20
+
+Location: LocationF
+   Item: fruit loop boxes, Quantity: 20
+
+Location: LocationG
+   Item: grapes, Quantity: 443
+
+Location: LocationH
+   Item: Hot dogs, Quantity: 1000
+
+Location: LocationI
+   Item: ice creams, Quantity: 20
+
+Location: LocationJ
+   Item: jalapeno peppers, Quantity: 20
+
+Location: LocationK
+   Item: ketchup, Quantity: 443
+

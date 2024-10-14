@@ -148,151 +148,99 @@ public class InventoryManager implements Constants{
         frame.setResizable(true);                            // Prevents frame from being resized
     }
 
+    // Called when the add item button is pressed
     private static void addItem() {
         // Logic to add items will go here
         System.out.println("Add Item clicked");
 
         // Prompt the user for item name, quantity, and location name
-        String itemName = JOptionPane.showInputDialog(
-            null, 
-            "Enter item name:", 
-            "Add Item", 
-            JOptionPane.QUESTION_MESSAGE
-        );
-        String itemQuantity = JOptionPane.showInputDialog(
-            null, 
-            "Enter quantity of that item:", 
-            "Add Item", 
-            JOptionPane.QUESTION_MESSAGE
-        );
-        // Validate that itemQuantity is a valid integer
-        int quantity;
-        try {
-            quantity = Integer.parseInt(itemQuantity);
-            if (quantity <= 0) {
-                JOptionPane.showMessageDialog(null, "Quantity must be a positive integer!", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Quantity must be a valid integer!", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        String locationName = JOptionPane.showInputDialog(
-            null, 
-            "Enter location to store item at:", 
-            "Add Item", 
-            JOptionPane.QUESTION_MESSAGE
-        );
-    
-        // Validate that inputs are not null or empty
-        if (itemName == null || itemName.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Item name cannot be empty!", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if (locationName == null || locationName.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Location name cannot be empty!", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+        String itemName = Utility.promptForInfo("Enter item name");
+        if(itemName != null){
+            String itemQuantity = Utility.promptForInfo("Enter quantity of that item");
+            if(itemQuantity != null){
 
-        // Loop through items at location and if they exist just add the quantity
-        boolean foundItem = false;
-        for(Location location : inventory.getLocations()){
-            if(location.getName().equalsIgnoreCase(locationName)){
-                for(Item item : location.getItems()){
-                    if(item.getName().equalsIgnoreCase(itemName)){
-                        item.setQuantity(item.getQuantity() + quantity);
-                        foundItem = true;
+                // Validate that itemQuantity is a valid integer
+                int quantity;
+                try {
+                    quantity = Integer.parseInt(itemQuantity);
+                    if (quantity <= 0) {
+                        Utility.sendErrorMessage("Quantity must be a positive integer!");
+                        return;
                     }
+                } catch (NumberFormatException e) {
+                    Utility.sendErrorMessage("Quantity must be a valid integer!");
+                    return;
+                }
+
+                // Ask for location name
+                String locationName = Utility.promptForInfo("Enter location to store item at");
+                if(locationName != null){
+                    // If the item exists at location, add it
+                    inventory.getLocation(locationName).addItem(new Item(itemName, quantity));
+                    Utility.sendInfoMessage("Item successfully added!");
                 }
             }
-        }
-        if(!foundItem){
-            // Create a new Item object
-            Item newItem = new Item(itemName, Integer.parseInt(itemQuantity));
-            // Add the item to the specified location
-            inventory.addItem(newItem, locationName);
         }
         
         refreshDisplay();
     }
 
+    // Called when the remove item button is pressed
     private static void removeItem() {
         // Logic to remove items will go here
         System.out.println("Remove Item clicked");
 
         // Prompt the user for item name, quantity, and location name
-        String itemName = JOptionPane.showInputDialog(
-            null, 
-            "Enter name of item to be removed:", 
-            "Add Item", 
-            JOptionPane.QUESTION_MESSAGE
-        );
-        if(itemName.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Item name cannot be empty!", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        String itemQuantity = JOptionPane.showInputDialog(
-            null, 
-            "Enter how many to remove:", 
-            "Add Item", 
-            JOptionPane.QUESTION_MESSAGE
-        );
-        // Validate that itemQuantity is a valid integer
-        int quantity;
-        try {
-            quantity = Integer.parseInt(itemQuantity);
-            if (quantity <= 0) {
-                JOptionPane.showMessageDialog(null, "Quantity must be a positive integer!", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
+        String itemName = Utility.promptForInfo("Enter name of item to be removed");
+        if(itemName != null){
+            String itemQuantity = Utility.promptForInfo("Enter how many to remove");
+            if(itemQuantity != null){
+
+                // Validate that itemQuantity is a valid integer
+                int quantity;
+                try {
+                    quantity = Integer.parseInt(itemQuantity);
+                    if (quantity <= 0) {
+                        Utility.sendErrorMessage("Quantity must be a positive integer!");
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    Utility.sendErrorMessage("Quantity must be a valid integer!");
+                    return;
+                }
+
+                String locationName = Utility.promptForInfo("Enter location to remove item from");
+                if(locationName != null){
+                    inventory.removeItem(locationName, itemName, quantity);
+
+                    // Confirm the item was removed
+                    Utility.sendInfoMessage(quantity + " * '" + itemName + "' removed from location '" + locationName + "'");
+                    System.out.println("Removing " + itemQuantity + " * " + itemName + " from location: '" + locationName + "'");
+                }
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Quantity must be a valid integer!", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        String locationName = JOptionPane.showInputDialog(
-            null, 
-            "Enter location to remove item from:", 
-            "Add Item", 
-            JOptionPane.QUESTION_MESSAGE
-        );
-        if(locationName.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Location name cannot be empty!", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
         }
 
-        // Remove the item
-        inventory.removeItem(locationName, itemName, quantity);
-
-        System.out.println("Removing " + itemQuantity + " * " + itemName + " from location: '" + locationName + "'");
         refreshDisplay();
     }
 
+    // Called when the add location button is pressed
     private static void addLocation() {
         // Logic to add locations will go here
         System.out.println("Add Location clicked");
 
         // Prompt the user for location name
-        String locationName = JOptionPane.showInputDialog(
-            null, 
-            "Enter a new location name:", 
-            "Add Item", 
-            JOptionPane.QUESTION_MESSAGE
-        );
-
-        // Validate that inputs are not null or empty
-        if (locationName == null || locationName.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Location name cannot be empty!", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        String locationName = Utility.promptForInfo("Enter a new location name");
+        if(locationName != null){
+            // Create a new Location object
+            Location location = new Location(locationName);
+            inventory.addLocation(location);
+            Utility.sendInfoMessage("Location successfully added!");
         }
 
-        // Create a new Location object
-        Location location = new Location(locationName);
-    
-        // Add the Location to inventory
-        inventory.addLocation(location);
         refreshDisplay();
     }
 
+    // Called when the remove location button is pressed
     private static void removeLocation() {
         // Logic to remove locations will go here
         System.out.println("Remove Location clicked");
@@ -307,6 +255,7 @@ public class InventoryManager implements Constants{
         refreshDisplay();
     }
 
+    // Called when the edit item button is pressed
     private static void editItem() {
         // Logic to edit items will go here
         System.out.println("Edit Item clicked");
@@ -340,6 +289,7 @@ public class InventoryManager implements Constants{
         refreshDisplay();
     }
 
+    // Called when the edit location button is pressed
     private static void editLocation() {
         // Logic to edit locations will go here
         System.out.println("Edit Location clicked");
@@ -362,13 +312,15 @@ public class InventoryManager implements Constants{
         refreshDisplay();
     }
 
+    // Called when the View Inventory button is pressed
     private static void generateReport() {
         // Logic to generate report will go here
         System.out.println("Generate Report clicked");
 
-        displayArea.setText(inventory.generateReport());
+        displayArea.setText(inventory.toString());
     }
 
+    // Called when the Import button is pressed
     private static void importData() {
         // Logic to import data will go here
         System.out.println("Import Data clicked");
@@ -385,6 +337,7 @@ public class InventoryManager implements Constants{
         generateReport();
     }
 
+    // Called when the Export button is pressed
     private static void exportData() {
         // Logic to export data will go here
         System.out.println("Export Data clicked");
@@ -400,13 +353,14 @@ public class InventoryManager implements Constants{
         inventory.exportData(fileOutName);
     }
 
+    // Called when the search button is pressed
     public static void searchItem() {
         String itemText = itemField.getText().trim();
         String locationText = locationField.getText().trim();
     
         // Scenario when both fields are empty
         if (itemText.isEmpty() && locationText.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Please enter an item or location to search", "Input Error", JOptionPane.ERROR_MESSAGE);
+            Utility.sendErrorMessage("Please enter an item or\n location before searching");
             return;
         }
     
@@ -419,43 +373,38 @@ public class InventoryManager implements Constants{
     
         // Scenario when only locationField has text
         if (itemText.isEmpty() && !locationText.isEmpty()) {
-            String result = inventory.searchLocation(locationText);
-            displayArea.setText(result);
+            StringBuilder result = new StringBuilder("Search Results for '" + locationText + "':\n");
+            Location location = inventory.getLocation(locationText);
+            if(location != null){
+                result.append("   " + location.toString());
+            }
+            
+            displayArea.setText(result.toString());
             return;
         }
     
         // Scenario when both fields have text
         if (!itemText.isEmpty() && !locationText.isEmpty()) {
-            StringBuilder result = new StringBuilder();
+            StringBuilder result = new StringBuilder("Results for '" + itemText + "' at location '" + locationText + "':\n");
 
-            for(Location location : inventory.getLocations()){
-                if(location.getName().equalsIgnoreCase(locationText)) {
-                    result
-                        .append("Results for '" + itemText + "' at location '" + locationText + "':\n");
-                    for(Item item : location.getItems()){
-                        if(item.getName().equalsIgnoreCase(itemText)){
-                            result
-                                .append("   ")
-                                .append("   " + item.getName())
-                                .append(", ")
-                                .append(item.getQuantity())
-                                .append(", ")
-                                .append(location.getName()) // This is the location name
-                                .append("\n"); // New line for the next item
-                        }
-                    }
+            // Get the location
+            Location location = inventory.getLocation(locationText);
+            if(location != null){
+                Item item = location.getItem(itemText); // Get the item
+                if(item != null){
+                    // If they both exist, append to the result and display it
+                    result.append("   " + item.toString() + "\n");
+                    displayArea.setText(result.toString());
+                } else {
+                    Utility.sendErrorMessage("Item '" + itemText + "' doesn't exist\n at location '" + locationText + "'");
                 }
-            }
-
-            if(result.isEmpty()){
-                displayArea.setText("No results found for '" + itemText + "' at location '" + locationText + "'");
             } else {
-                displayArea.setText(result.toString().trim());
+                Utility.sendErrorMessage("Location '" + locationText + "' doesn't exist");
             }
-            
         }
     }
 
+    // Called in various functions to refresh the display
     public static void refreshDisplay(){
         String itemText = itemField.getText().trim();
         String locationText = locationField.getText().trim();

@@ -30,6 +30,7 @@ public class Inventory {
         locations.add(location);
     }
 
+    // Removes a given location from list of locations
     public void removeLocation(String locationName){
         // Loop through all locations
         for(int i = 0; i < getLocations().size(); i++){
@@ -96,14 +97,6 @@ public class Inventory {
 
                                 // Remove the item
                                 location.removeItem(itemName, quantity); // Remove item
-
-                                // Confirm the item was removed
-                                JOptionPane.showMessageDialog(
-                                    null, 
-                                    quantity + " * '" + item.getName() + "' removed from location '" + locationName + "'.", 
-                                    "Success", 
-                                    JOptionPane.INFORMATION_MESSAGE
-                                );
                                 
                                 // We found an item, break out of loop
                                 foundItem = true;
@@ -150,7 +143,7 @@ public class Inventory {
                 Item newItem = originalLocation.getItem(itemName); // Get the item from the original location
                 if(newItem != null){ // Make sure item exists
                     // Add item to new location
-                    newLocation.addItem(newItem);
+                    addItem(newItem, newLocationName);
 
                     // Remove item from original location
                     originalLocation.removeItem(newItem.getName(), newItem.getQuantity());
@@ -175,60 +168,21 @@ public class Inventory {
         return null;
     }
 
-    // Generates a report on this inventory object
-    public String generateReport() {
-        StringBuilder report = new StringBuilder("Inventory Report:\n");
-        for (Location location : locations) {
-            report
-                .append("   " + location.getName() + " Items:\n")
-                .append("   NAME, QTY, LOCATION\n")
-                .append("   " + location.toString())
-                .append("\n\n");
-        }
-        return report.toString();
-    }
-
-    // Search for items by name and reports their locations
+    // Search for all items by a given name and returns a string detailing their locations
     public String searchItem(String itemName) {
         StringBuilder report = new StringBuilder("Search Results for '" + itemName + "':\n");
-        boolean itemFound = false;
+        boolean atLeastOneItemFound = false;
 
-        for (Location location : locations) {
-            for (Item item : location.getItems()) {
-                if (item.getName().equalsIgnoreCase(itemName)) {
-                    report.append("   " + item.getName() + ", " + item.getQuantity() + ", " + location.getName() + "\n");
-                    itemFound = true;
-                }
+        for (Location location : getLocations()) { // Loop through all locations
+            Item item = location.getItem(itemName); // Find the item being searched for
+            if(item != null){ // If it exists
+                atLeastOneItemFound = true;
+                report.append("   " + item.toString() + ", " + location.getName() + "\n");
             }
         }
 
-        if (!itemFound) {
+        if(!atLeastOneItemFound){
             report.append("   No items found with the name '" + itemName + "'.\n");
-        }
-
-        return report.toString();
-    }
-
-    // Search for location by name and reports all items in that location
-    public String searchLocation(String locationName) {
-        StringBuilder report = new StringBuilder("Search Results for '" + locationName + "':\n");
-        boolean locationFound = false;
-
-        // Loop through all location and find a match
-        for (Location location : locations) {
-            if (location.getName().equalsIgnoreCase(locationName)) {
-                // Display that locations items
-                report
-                    .append("   ")
-                    .append(locationName + " Items:\n")
-                    .append("   NAME, QTY, LOCATION\n")
-                    .append("   " + location.toString() + "\n");
-                locationFound = true;
-            }
-        }
-
-        if (!locationFound) {
-            report.append("   No locations found with the name '" + locationName + "'.\n");
         }
 
         return report.toString();
@@ -244,9 +198,9 @@ public class Inventory {
                 }
                 writer.write("\n");
             }
-            JOptionPane.showMessageDialog(null, "Data exported successfully to " + filename, "Export Success", JOptionPane.INFORMATION_MESSAGE);
+            Utility.sendInfoMessage("Data exported successfully to " + filename);
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error exporting data: " + e.getMessage(), "Export Error", JOptionPane.ERROR_MESSAGE);
+            Utility.sendErrorMessage("Error exporting data: " + e.getMessage());
         }
     }
 
@@ -273,11 +227,23 @@ public class Inventory {
                     }
                 }
             }
-            JOptionPane.showMessageDialog(null, "Data imported successfully from " + filename, "Import Success", JOptionPane.INFORMATION_MESSAGE);
+            Utility.sendInfoMessage("Data imported successfully from " + filename);
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error importing data: " + e.getMessage(), "Import Error", JOptionPane.ERROR_MESSAGE);
+            Utility.sendErrorMessage("Error importing data: " + e.getMessage());
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Error in data format: " + e.getMessage(), "Format Error", JOptionPane.ERROR_MESSAGE);
+            Utility.sendErrorMessage("Error in data format: " + e.getMessage());
         }
+    }
+
+    // Generates a string representing the entire inventory
+    @Override
+    public String toString(){
+        StringBuilder report = new StringBuilder("Inventory Report:\n");
+        for (Location location : getLocations()) {
+            report
+                .append("   " + location.toString())
+                .append("\n\n");
+        }
+        return report.toString();
     }
 }

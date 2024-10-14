@@ -8,27 +8,22 @@
 
 import java.util.ArrayList;
 
-public class Location {
+public class Location extends Entity{
     // Fields
-    private String name;
     private ArrayList<Item> items;
-    private int quantity; // Total quantity of items at this location
 
     // Constructor
     public Location(String name) {
-        this.name = name;
+        super(name);
         this.items = new ArrayList<>(); // Items at this location
     }
 
-    // Mutator methods
-    public String getName() {
-        return name;
-    }
-
+    // Returns arrayList of all items
     public ArrayList<Item> getItems() {
         return items;
     }
 
+    // Returns a specific item by name, if it exists
     public Item getItem(String itemName){
         for(Item item : items){
             if(item.getName().equalsIgnoreCase(itemName)){
@@ -38,18 +33,19 @@ public class Location {
         return null;
     }
 
-    public int getQuantity() {
-        int totalQuantity = 0;
-        for (Item item : items){
-            totalQuantity += item.getQuantity();
-        }
-        return totalQuantity;
-    }
-
+    // Adds item to list
     public void addItem(Item item) {
-        items.add(item);
+        Item preExistingItem = getItem(item.getName());
+        if(preExistingItem != null){ // If item already exists
+            // Add quantity to pre-existing item
+            preExistingItem.setQuantity(preExistingItem.getQuantity() + item.getQuantity());
+        } else {
+            // Add new item
+            items.add(item);
+        }
     }
 
+    // Removes a set number of items by name from list
     public void removeItem(String itemName, int quantity) {
         // Loop through items and find the one with the given name
         for (int i = 0; i < items.size(); i++) {
@@ -60,7 +56,7 @@ public class Location {
                 // If the item's quantity is less than or equal to the quantity to be removed, remove the item
                 if (currentItem.getQuantity() <= quantity) {
                     items.remove(i);
-                    System.out.println(itemName + " removed from " + name + " location.");
+                    System.out.println(itemName + " removed from " + getName() + " location.");
                     i--; // Adjust the index because the list size has decreased
                 } else { 
                     // Otherwise, subtract the quantity and update the item
@@ -72,48 +68,30 @@ public class Location {
         }
         
         // If the item was not found in the list
-        System.out.println(itemName + " not found in " + name + " location.");
-    }
-
-    public void setName(String name){
-        this.name = name;
-    }
-
-    public void setQuantity(int quantity){
-        this.quantity = quantity;
+        System.out.println(itemName + " not found in " + getName() + " location.");
     }
 
     // Method to search for items by name
     public String searchItems(String itemName) {
         StringBuilder result = new StringBuilder();
-        for (Item item : items) {
-            if (item.getName().equalsIgnoreCase(itemName)) {
-                result
-                    .append("   ")
-                    .append(item.getName())
-                    .append(", ")
-                    .append(item.getQuantity())
-                    .append(", ")
-                    .append(name) // This is the location name
-                    .append("\n"); // New line for the next item
-            }
+        Item item = getItem(itemName);
+        if(item != null){
+            result
+                .append("   " + item.toString())
+                .append(", ")
+                .append(getName()) // This is the location name
+                .append("\n"); // New line for the next item
         }
+
         return result.toString().trim(); // Remove the last newline character
     }
 
     // Overriding the object.toString() method
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
-        for (Item item : items) {
-            result
-                .append("   ")
-                .append(item.getName())
-                .append(", ")
-                .append(item.getQuantity())
-                .append(", ")
-                .append(name) // This is the location name
-                .append("\n"); // New line for the next item
+        StringBuilder result = new StringBuilder(getName() + " Items: \n");
+        for (Item item : getItems()) {
+            result.append("      " + item.toString() + "\n");
         }
         return result.toString().trim(); // Remove the last newline character
     }
